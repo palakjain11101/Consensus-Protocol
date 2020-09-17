@@ -60,13 +60,9 @@ public class Participant {
     public static void main (String[]args){
         try {
             Participant participant = new Participant(args);
-            System.out.println("Got here");
             participant.sendJoin();
-            System.out.println("Got here too");
             participant.getDetails();
-            System.out.println("Got here too");
             participant.getOptions();
-            System.out.println("444444444444444444");
             participant.startRounds();
             System.out.println("Details received");
         } catch (Exception e) {
@@ -99,7 +95,6 @@ public class Participant {
     }
 
     public void sendJoin(){
-        System.out.println("33333333");
         out.println("JOIN " + pport);
         out.flush();
         pLogger.joinSent(cport);
@@ -107,7 +102,6 @@ public class Participant {
     }
 
     private void getDetails() {
-        System.out.println("HElloo");
         String details = "";
         try {
             details = in.readLine();
@@ -180,9 +174,7 @@ public class Participant {
                 peerParticipant.setId(port);
                 getHigherPeers().add(peerParticipant);
                 pLogger.connectionEstablished(peer.getPort());
-            } else {
-
-            }
+            } 
         } catch (IOException e) {
 
         }
@@ -251,15 +243,16 @@ public class Participant {
 
 
     public void startRounds() {
-
+        
         pLogger.beginRound(1);
         List<Vote> firstVote = Collections.synchronizedList(new ArrayList<>(votes));
         List<Vote> votesList = new ArrayList<>();
+        
         for (PeerParticipant peer : getHigherPeers()) {
-            System.out.println("Here2");
             sendVote(peer, firstVote);
             pLogger.votesSent(peer.id, firstVote);
         }
+        
 
         for (PeerParticipant peer : getLowerPeers()) {
             try {
@@ -283,7 +276,7 @@ public class Participant {
                     pLogger.votesReceived(peer.getId(), votesList);
 
                 }
-            }catch(SocketTimeoutException e){
+            } catch(SocketTimeoutException e){
                 if (peer.id > 0) {
                     pLogger.participantCrashed(peer.getId());
                 }
@@ -293,13 +286,16 @@ public class Participant {
             }
 
         }
+        
 
         votesList.clear();
+        
 
         for (PeerParticipant peer : lowerConnections) {
             sendVote(peer, firstVote);
             pLogger.votesSent(peer.getId(), firstVote);
         }
+        
 
         for (PeerParticipant peer : higherConnections) {
             try {
@@ -310,9 +306,7 @@ public class Participant {
                     for (int i = 1; i < messageParts.length; i += 2) {
                         Vote thisvote = new Vote(Integer.parseInt(messageParts[i]), messageParts[i + 1]);
                         votesList.add(thisvote);
-
                     }
-
                     if(votesToSend == null){
                         votesToSend = receiveVote(votesList);
                     }
@@ -322,7 +316,7 @@ public class Participant {
                     pLogger.votesReceived(peer.getId(), votesList);
 
                 }
-            }catch(SocketTimeoutException e){
+            } catch(SocketTimeoutException e){
                 if (peer.id > 0) {
                     pLogger.participantCrashed(peer.getId());
                 }
@@ -330,12 +324,13 @@ public class Participant {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
+        
         votesList.clear();
         pLogger.endRound(1);
 
 
+        
         for (int j = 2; j <= allConnections.size() + 1; j++) {
             pLogger.beginRound(j);
             System.out.println("Round: "+ j);
