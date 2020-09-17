@@ -49,7 +49,6 @@ public class Coordinator {
         this.timeout = Timeout;
 
         options.addAll(Arrays.asList(args).subList(4, args.length));
-        System.out.println("Hello");
 
         try {
             CoordinatorLogger.initLogger(lport, port, timeout);
